@@ -1,138 +1,112 @@
 "use client";
 
-import { useEffect, useRef, useState } from 'react';
+import { DndContext, DragMoveEvent, useDroppable } from '@dnd-kit/core';
+import { restrictToHorizontalAxis } from '@dnd-kit/modifiers';
+import { useEffect, useId, useState } from 'react';
 import useTimelineStore from '~/store/timeline-store';
 import { cn } from '~/utils/cn';
+import { formatHHMMSSmm, formatSSmm } from '~/utils/format-time';
+import MediaResizer from './media-resizer';
+import { useSortable } from '@dnd-kit/sortable';
 
 type MediaProps = {
   trackId: number;
   mediaId: number;
-}
+  displayPreview: 'start' | 'end' | 'none';
+};
 
-const Media = ({trackId, mediaId}: MediaProps) => {
+const Media = ({ trackId, mediaId, displayPreview }: MediaProps) => {
   const media = useTimelineStore((state) => state.tracks.find((track) => track.id === trackId)?.items.find((item) => item.id === mediaId));
-
+  const zoom = useTimelineStore((state) => state.zoom);
   if (!media) {
     return null;
   }
 
   const playhead = useTimelineStore((state) => state.playhead);
-  const shouldPlay = media.startTime + media.startOffset <= playhead && media.endTime + media.endOffset >= playhead;
-  const updateMediaTimeline = useTimelineStore((state) => state.updateMediaTimeline);
-  
-  const [dragging, setDragging] = useState(false);
-  const [marginLeft, setMarginLeft] = useState(0);
-  const [draggingMargin, setDraggingMargin] = useState(0);
-  const [startX, setStartX] = useState(0);
-
-  const startZoneRef = useRef<HTMLDivElement>(null);
-  const endZoneRef = useRef<HTMLDivElement>(null);
-
-  const handleMouseDown = (e: React.MouseEvent) => {
-    console.log('mouse down');  
-    e.preventDefault();
-    setDragging(true);
-    setStartX(e.clientX);
-  }
-  const handleMouseUp = (e: React.MouseEvent) => {
-    e.preventDefault();
-    setDragging(false);
-    setStartX(e.clientX);
-    setMarginLeft(draggingMargin);
-
-    updateMediaTimeline(trackId, mediaId, {...media, startTime: media.startTime + draggingMargin, endTime: media.endTime + draggingMargin});
-  }
-  
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (dragging) {
-      const diff = e.clientX - startX;
-      if (marginLeft + diff < 0) {
-        return;
-      }
-      setDraggingMargin(marginLeft + diff);
-    }
-  }
+  const resizeMediaStart = useTimelineStore((state) => state.resizeMediaStart);
+  const resizeMediaEnd = useTimelineStore((state) => state.resizeMediaEnd);
+  const shouldPlay = media.startTime <= playhead && media.endTime >= playhead;
+  const [width, setWidth] = useState((media.displayTime) * zoom);
+  const [left, setLeft] = useState((media.startTime) * zoom);
+  const [previousDelta, setPreviousDelta] = useState(0);
 
   useEffect(() => {
-    console.log('margin', marginLeft);
-  }, [marginLeft]);
+    const newLeft = (media.startTime) * zoom;
+    setLeft((newLeft));
+    const newWidth = (media.displayTime) * zoom;
+    setWidth(newWidth);
+  }, [media.startTime, media.displayTime, zoom]);
 
+  const { attributes, listeners, setNodeRef, transform } = useSortable({
+    id: `media-${mediaId}`,
+  });
 
+  const { setNodeRef: setNodeContainerRef } = useDroppable({
+    id: `media-${mediaId}-container`,
+  });
 
+  const { setNodeRef: setNodeFirstThirdRed } = useDroppable({
+    id: `media-${mediaId}-first-third`,
+  });
 
-  const [width, setWidth] = useState((media.duration - media.endOffset - media.startOffset) * 100);
-  const [draggingState, setDraggingState] = useState<'start' | 'end' | null>(null);
-  const [draggingWidth, setDraggingWidth] = useState(width);
-  const [endOffsetX, setEndOffsetX] = useState(0);
+  const { setNodeRef: setNodeSecondThirdRed } = useDroppable({
+    id: `media-${mediaId}-second-third`,
+  });
 
-  function startMouseDown(e: React.MouseEvent) {
-    e.preventDefault();
-    setDraggingState('start');
-  }
-  
+  function handleDragResize(event: DragMoveEvent) {
+    const deltaX = event.delta.x < 0 ? Math.min(event.delta.x, -1) : Math.max(event.delta.x, 1);
 
-  function startMouseMove(e: React.MouseEvent) {
-    if (draggingState === 'start') {
-      
+    if (event.active.data.current?.position === 'start') {
+
+      const deltaFromPreviousCall = deltaX - previousDelta;
+      const durationDelta = deltaFromPreviousCall / zoom;
+
+      resizeMediaStart(trackId, mediaId, durationDelta);
+      setPreviousDelta(deltaX);
+    }
+    if (event.active.data.current?.position === 'end') {
+      const deltaFromPreviousCall = (deltaX - previousDelta) * -1 / zoom;
+      resizeMediaEnd(trackId, mediaId, deltaFromPreviousCall);
+      setPreviousDelta(deltaX);
     }
   }
-  function startMouseUp(e: React.MouseEvent) {
-    e.preventDefault();
-    setDraggingState(null);
+
+  function handleDragResizeEnd() {
+    setPreviousDelta(0);
   }
-
-  function endMouseDown(e: React.MouseEvent) {
-    e.preventDefault();
-    setDraggingState('end');
-    setEndOffsetX(e.clientX);
-  }
-  function endMouseMove(e: React.MouseEvent) {
-    if (draggingState === 'end') {
-      const diff = e.clientX - endOffsetX;
-      if (media)
-        media.endOffset = diff / 100;
-      console.log('diff', diff);
-      setDraggingWidth(width + diff);
-    }
-  }
-  function endMouseUp(e: React.MouseEvent) {
-    e.preventDefault();
-    setDraggingState(null);
-    setWidth(draggingWidth);
-    setEndOffsetX(e.clientX);
-
-    if (media)
-      updateMediaTimeline(trackId, mediaId, {...media});
-
-  }
-
-
-
-
-
-
 
   return (
     <li
-      // onMouseDown={handleMouseDown}
-      // onMouseUp={handleMouseUp}
-      // onMouseMove={handleMouseMove}
-      // onMouseLeave={handleMouseUp}
-      
-      className={cn("relative border-[var(--color-primary-yellow)] border-2 rounded-md p-2 h-12", 
-      `${shouldPlay ? 'bg-[var(--color-primary-yellow)]' : 'bg-[var(--color-secondary-grey)]'}`)
-    }
-      style={{width: `${draggingState !== null ? draggingWidth : width}px`, marginLeft: `${dragging ? draggingMargin : marginLeft}px`}}
+      ref={setNodeRef}
+      {...attributes}
+      {...listeners}
+
+      className={cn("absolute border-primary-yellow border-2 rounded-md p-2 h-12 flex items-center justify-center",
+        `${shouldPlay ? 'bg-primary-yellow' : 'bg-secondary-grey'}`)
+      }
+      style={{width: `${width}px`,left: `${left}px`,}}
     >
-      <div ref={startZoneRef} className={`absolute h-12 w-4 left-[-1px] top-[-2px] ${draggingState === 'start' ? 'cursor-grabbing' : 'cursor-grab'}`}/>
-      <p className='text-center'>{media.name}</p>
-      <div 
-        ref={endZoneRef}
-        className={`absolute h-12 w-4 right-[-1px] top-[-2px] ${draggingState === 'end' ? 'cursor-grabbing' : 'cursor-grab'}`}
-        onMouseDown={endMouseDown}
-        onMouseMove={endMouseMove}
-        onMouseUp={endMouseUp}
-      />
+      <DndContext
+        id={useId()}
+        modifiers={[restrictToHorizontalAxis]}
+        onDragMove={handleDragResize}
+        onDragEnd={handleDragResizeEnd}
+      >
+        {displayPreview === 'start'
+          ? <div className='absolute h-12 w-4 top-[-2px] left-[-2px] bg-primary-blue' />
+          : null
+        }
+        <MediaResizer position={'start'} mediaId={mediaId} />
+        <p className='text-center'>{media.name} début: {formatSSmm(left / zoom)} durée: {formatSSmm(media.displayTime)}</p>
+        <div ref={setNodeContainerRef} className='absolute h-12 top-[-2px] left-[-2px] -z-10 border border-green-600' style={{ width: `${width}px` }} />
+        <div ref={setNodeFirstThirdRed} className='absolute h-12 w-1/3 top-[-2px] left-0 -translate-x-[2px] -z-10 border border-blue-600' />
+        <div ref={setNodeSecondThirdRed} className='absolute h-12 w-1/3 top-[-2px] left-2/3 translate-x-[2px] -z-10 border border-red-600' />
+        <MediaResizer position={'end'} mediaId={mediaId} />
+        {displayPreview === 'end'
+          ? <div className='absolute h-12 w-4 top-[-2px] right-[-2px] bg-primary-blue' />
+          : null
+        }
+      </DndContext>
     </li>
   )
 }

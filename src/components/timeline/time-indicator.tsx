@@ -1,17 +1,19 @@
 "use client";
 
-import React from 'react'
 import useTimelineStore from '~/store/timeline-store';
 
 const TimeIndicator = () => {
   const duration = useTimelineStore((state) => state.duration);
-  const times: number[] = Array.from({length: duration}, (_, i) => i);
-  times.push(duration);
-
+  const zoom = useTimelineStore((state) => state.zoom);
+  const times: number[] = Array.from({length: duration + 1}, (_, i) => i);
+  
   return (
-    <div className='w-full flex justify-between mb-2'>
+    <div className='relative mb-2 h-7' style={{ width: `${duration * zoom}px`}}>
       {times.map((time) => (
-        <p key={time} className='text-xs'>{time}</p>
+        <div key={time} className='absolute z-50 top-0 -translate-x-1/2 flex flex-col items-center' style={{ left: `${time * zoom}px`}}>
+          <p className={`text-xs text-center`} >{time}</p>
+          <div className='w-px h-3 bg-secondary-grey' />
+        </div>
       ))}
     </div>
   )
