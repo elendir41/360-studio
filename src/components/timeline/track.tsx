@@ -64,7 +64,6 @@ const Track = ({ trackId }: TrackProps) => {
       return;
     }
 
-    console.log("comportement normal");
     setPreviewItem(null);
 
     moveMediaTimeline(trackId, mediaId, deltaFromPreviousCall / zoom);

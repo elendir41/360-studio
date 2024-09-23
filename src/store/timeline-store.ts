@@ -231,7 +231,6 @@ const useTimelineStore = create<TimelineStore>((set) => ({
       const isLast = mediaIndex === track.items.length - 1;
       const isBeyondTimelineDuration = newOriginTime + media.displayTime > state.duration;
       if (isLast && isBeyondTimelineDuration) {
-        console.log("media is out of bounds");
         addToast({title: "Impossible de bouger le média", content: `${media.name} dépasse la durée de la timeline` , type: "error"});
         return state;
       }
@@ -247,7 +246,6 @@ const useTimelineStore = create<TimelineStore>((set) => ({
         return isDifferent && (endBetweenNextMedia || startBeforeEndAfterNextMedia);
       });
       if (overLapedMedia) {
-        console.log("media is overlapping", overLapedMedia.name);
         addToast({title: "Impossible de bouger le média", content: `${media.name} dépasse sur ${overLapedMedia.name}` , type: "error"});
         return state;
       }
@@ -256,7 +254,6 @@ const useTimelineStore = create<TimelineStore>((set) => ({
     } else { // moving left
       const newOriginTime = targetMedia.startTime - media.displayTime - media.startOffset;
       if (mediaIndex === 1 && newOriginTime + media.startOffset < 0) {
-        console.log("media is out of bounds");
         addToast({title: "Impossible de bouger le média", content: `${media.name} dépasse la durée de la timeline` , type: "error"});
         return state;
       }
@@ -272,7 +269,6 @@ const useTimelineStore = create<TimelineStore>((set) => ({
         return isDifferent && (startBetweenPrevMedia || startBeforeEndAfterPrevMedia);
       });
       if (overLapedMedia) {
-        console.log("media is overlapping", overLapedMedia.name);
         addToast({title: "Impossible de bouger le média", content: `${media.name} dépasse sur ${overLapedMedia.name}` , type: "error"});
         return state;
       }
