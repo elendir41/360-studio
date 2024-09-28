@@ -11,6 +11,8 @@ type TimelineStore = {
   tracks: Track[];
   isPlaying: boolean;
   zoom: number;
+  selectedMedia: [number, number] | null;
+  canCutMedia: boolean;
 
   setZoom: (zoom: number) => void;
   incrementZoom: (increment: number) => void;
@@ -24,6 +26,9 @@ type TimelineStore = {
   resizeMediaStart: (trackId: number, mediaId: number, delta: number) => void;
   resizeMediaEnd: (trackId: number, mediaId: number, delta: number) => void;
   moveMediaOrder: (trackId: number, mediaId: number, targetMediaId: number) => void;
+
+  setSelectedMedia: (mediaId: [number, number]) => void;
+  cutMedia: () => void;
 
   play: () => void;
   pause: () => void;
@@ -83,16 +88,28 @@ const useTimelineStore = create<TimelineStore>((set) => ({
         type: MediaType.IMAGE,
         source: 'https://via.placeholder.com/150',
         name: 'Image 2',
-        duration: 10,
-        originTime: 1,
-        startOffset: 8,
+        duration: 4,
+        originTime: 9,
+        startOffset: 0,
         endOffset: 0,
       }),
     ]
   }],
   isPlaying: false,
+  selectedMedia: null,
+  canCutMedia: false,
 
-  setPlayhead: (playhead) => set({ playhead }),
+  setPlayhead: (playhead) => set((state) => {
+    let canCut = false;
+    state.tracks.forEach((track) => {
+      track.items.forEach((item) => {
+        if (item.startTime < playhead && item.endTime > playhead) {
+          canCut = true;
+        }
+      });
+    });
+    return { playhead: playhead, canCutMedia: canCut };
+  }),
   setZoom: (zoom) => set({ zoom }),
   incrementZoom: (increment) => set((state) => {
     if (state.zoom + increment < 50) {
@@ -106,7 +123,7 @@ const useTimelineStore = create<TimelineStore>((set) => ({
     }
     return { playhead: state.duration, isPlaying: false };
   }),
-  play: () => set({ isPlaying: true }),
+  play: () => set({ isPlaying: true, canCutMedia: false }),
   pause: () => set({ isPlaying: false }),
 
   setDuration: (duration) => set({ duration }),
@@ -278,6 +295,47 @@ const useTimelineStore = create<TimelineStore>((set) => ({
     track.items.sort((a, b) => a.startTime - b.startTime);
     const trackIndex = state.tracks.findIndex((track) => track.id === trackId);
     state.tracks[trackIndex] = { ...track };
+    return { tracks: [...state.tracks] };
+  }),
+
+  setSelectedMedia: (selectedMedia) => set({ selectedMedia }),
+
+  cutMedia: () => set((state) => {
+    if (!state.selectedMedia) {
+      return state;
+    }
+    const [trackId, mediaId] = state.selectedMedia;
+    const track = state.tracks.find((track) => track.id === trackId);
+    if (!track) {
+      return state;
+    }
+    const mediaIndex = track.items.findIndex((item) => item.id === mediaId);
+    if (mediaIndex === -1) {
+      return state;
+    }
+    const media = track.items.find((item) => item.id === mediaId)!;
+    const newMedia1 = new MediaTimeline({
+      id: mediaId + 11,
+      type: media.type,
+      source: media.source,
+      name: `${media.name} - 1`,
+      duration: state.playhead - (media.originTime + media.startOffset),
+      originTime: media.originTime + media.startOffset,
+      startOffset: media.startOffset,
+      endOffset: 0,
+    });
+    const newMedia2 = new MediaTimeline({
+      id: mediaId + 12,
+      type: media.type,
+      source: media.source,
+      name: `${media.name} - 2`,
+      duration: media.originTime + media.duration - media.endOffset - state.playhead,
+      originTime: state.playhead,
+      startOffset: 0,
+      endOffset: media.endOffset,
+    });
+    track.items = track.items.filter((item) => item.id != mediaId);
+    track.items.push(newMedia1, newMedia2);
     return { tracks: [...state.tracks] };
   })
 }));
