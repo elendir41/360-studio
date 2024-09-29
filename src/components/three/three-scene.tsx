@@ -1,28 +1,36 @@
 "use client";
 
 import { Canvas } from '@react-three/fiber';
-import { Suspense, useRef } from 'react';
+import { Suspense, useState } from 'react';
 import BasicScene from './basic-scene';
 
 const ThreeScene = () => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
+  // État pour gérer la vue
+  const [is2DView, setIs2DView] = useState(false);
+
+  const toggleView = () => {
+    setIs2DView(!is2DView);
+  };
 
   return (
     <>
-      <div ref={containerRef} className='flex-1'>
+      {/* Bouton de bascule entre vue 2D et 3D */}
+      <div style={{ position: 'absolute', top: '10px', left: '10px', zIndex: 1 }}>
+        <button onClick={toggleView}>
+          {is2DView ? 'Passer à la vue 3D' : 'Passer à la vue 2D'}
+        </button>
+      </div>
+      <div className="flex-1 w-full h-full">
         <Canvas
-          ref={canvasRef}
-          camera={{ position: [-0.1, 0, 0] }}
           className='w-full h-full'
         >
           <Suspense fallback={null}>
-            <BasicScene />
+            <BasicScene is2DView={is2DView} />
           </Suspense>
         </Canvas>
       </div>
     </>
-  )
-}
+  );
+};
 
-export default ThreeScene
+export default ThreeScene;
