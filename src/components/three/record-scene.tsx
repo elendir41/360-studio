@@ -39,8 +39,7 @@ const RecordScene = () => {
 
   const worker = new Worker(new URL('./render-worker.jsx', import.meta.url), { type: 'module' });
   useEffect(() => {
-    if (transfered.current) return;
-
+    if (!canvasRef.current) return;
     // if (!canvasRef.current) return;
     // console.log('transferControlToOffscreen');
     // // canvasRef.current.transferControlToOffscreen();
@@ -54,6 +53,7 @@ const RecordScene = () => {
     // return () => {
     //   worker.terminate();
     // };
+    
   }, [canvasRef.current]);
 
   const cubecameraRef = useRef<THREE.CubeCamera>();
@@ -72,8 +72,8 @@ const RecordScene = () => {
 
   return (
     <>
-      <div ref={containerRef} className='h-[80%]'>
-        <div id='container' className='h-[80%] flex'>
+      <div id="container" ref={containerRef} className='flex h-[80%]'>
+        <div className='flex'>
 
           <Canvas
             id='3d-canvas'

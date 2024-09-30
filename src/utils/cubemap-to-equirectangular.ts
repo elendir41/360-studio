@@ -124,8 +124,10 @@ export class CubemapToEquirectangular {
     }
 
     if (provideCubeCamera) {
-      this.getCubeCamera(2048);
+      this.getCubeCamera(1024);
     }
+
+    this.startDownload();
   }
 
   setSize(width: number, height: number): void {
@@ -181,14 +183,17 @@ export class CubemapToEquirectangular {
     this.renderer.render(this.scene, this.camera);
 
     const pixels = new Uint8Array(4 * this.width * this.height);
-    this.renderer.readRenderTargetPixels(this.output, 0, 0, this.width, this.height, pixels);
-
+    this.renderer.readRenderTargetPixels(this.output, 0, 0, this.width, this.height, pixels)
+    // .then(() => {
+      const imageData = new ImageData(new Uint8ClampedArray(pixels), this.width, this.height);
+      
+      if (download !== false) {
+        this.download(imageData);
+      }
+      
+    // });
     this.renderer.setRenderTarget(null);
-    const imageData = new ImageData(new Uint8ClampedArray(pixels), this.width, this.height);
 
-    if (download !== false) {
-      this.download(imageData);
-    }
 
     // return imageData;
   }
@@ -198,6 +203,14 @@ export class CubemapToEquirectangular {
     if (this.mediaRecorder && this.isRecording) {
       this.mediaRecorder.stop();
     }
+    this.renderer.setRenderTarget(null);
+    console.log('end download', this.isRecording);
+  }
+
+  public startDownload(): void {
+    this.isRecording = true;
+    this.renderer.setRenderTarget(this.output);
+    console.log('start download', this.isRecording);
   }
 
   private download(imageData: ImageData): void {
@@ -205,7 +218,7 @@ export class CubemapToEquirectangular {
       throw new Error('Canvas context is not available');
     }
 
-    this.isRecording = true;
+    // this.isRecording = true;
     this.ctx.putImageData(imageData, 0, 0);
     if (this.mediaRecorder && !this.isRecording) {
       this.chunks = [];
@@ -249,7 +262,6 @@ export class CubemapToEquirectangular {
     const autoClear = this.renderer.autoClear;
     this.renderer.autoClear = true;
     if (this.cubeCamera) {
-      console.log('update');
       // this.cubeCamera.position.copy(camera.position);
       this.cubeCamera.update(this.renderer, scene);
       this.renderer.autoClear = autoClear;

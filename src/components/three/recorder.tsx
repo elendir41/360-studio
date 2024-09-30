@@ -48,7 +48,7 @@ const Recorder = forwardRef((_, ref) => {
 
       // cubeCamera.update(gl, scene);
       if (equiConverter) {
-        equiConverter.convert();
+        equiConverter.startDownload();
       }
       // gl.render(scene, camera);
     },
@@ -58,7 +58,7 @@ const Recorder = forwardRef((_, ref) => {
       const equiConverter = equiConverterRef.current;
       if (!equiConverter) return;
       equiConverter.endDownload();
-    }
+    },
   }));
 
 
