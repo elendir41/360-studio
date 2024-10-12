@@ -14,8 +14,7 @@ const serverRequest = async <T extends object>(url: string, options?: Options) =
 
     return response.data;
   } catch (error) {
-    console.error("erreur lors de la requete", error)
-    // console.error(error.data);
+    console.error("erreur lors de la requete", error);
   }
 };
 

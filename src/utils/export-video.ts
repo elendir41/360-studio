@@ -1,4 +1,3 @@
-// import serverRequest from "~/server/utils/server-request";
 import request from "~/utils/request";
 
 function downloadFile(fileUrl: string, fileName: string) {
@@ -29,7 +28,6 @@ export const exportVideo = async (videoBlob: Blob, fileName: string) => {
       body: formData,
     });
 
-    console.log('response', response);
     if (response.body && 'fileUrl' in response.body) {
       downloadFile(response.body.fileUrl, `${fileNameWithoutExtension}.mp4`);
     } else {
