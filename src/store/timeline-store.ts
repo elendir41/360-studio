@@ -100,14 +100,18 @@ const useTimelineStore = create<TimelineStore>((set) => ({
   canCutMedia: false,
 
   setPlayhead: (playhead) => set((state) => {
-    let canCut = false;
-    state.tracks.forEach((track) => {
-      track.items.forEach((item) => {
-        if (item.startTime < playhead && item.endTime > playhead) {
-          canCut = true;
-        }
-      });
-    });
+    const selectedMedia = state.selectedMedia;
+    if (!selectedMedia) {
+      return { playhead: playhead, canCutMedia: false };
+    }
+
+    const media = state.tracks.find((track) => track.id === selectedMedia?.[0])?.items.find((item) => item.id === selectedMedia?.[1]);
+    if (!media) {
+      return { playhead: playhead, canCutMedia: false };
+    }
+
+    let canCut = media.startTime < playhead && playhead < media.endTime;
+
     return { playhead: playhead, canCutMedia: canCut };
   }),
   setZoom: (zoom) => set({ zoom }),
@@ -298,7 +302,16 @@ const useTimelineStore = create<TimelineStore>((set) => ({
     return { tracks: [...state.tracks] };
   }),
 
-  setSelectedMedia: (selectedMedia) => set({ selectedMedia }),
+  setSelectedMedia: (selectedMedia) => set((state) =>
+    {
+      const media = state.tracks.find((track) => track.id === selectedMedia?.[0])?.items.find((item) => item.id === selectedMedia?.[1]);
+      if (!media) {
+        return { selectedMedia, canCutMedia: false };
+      }
+
+      let canCut = media.startTime < state.playhead && state.playhead < media.endTime;
+      return { selectedMedia, canCutMedia: canCut };
+    }),
 
   cutMedia: () => set((state) => {
     if (!state.selectedMedia) {

@@ -22,7 +22,6 @@ const Media = ({ trackId, mediaId, displayPreview }: MediaProps) => {
     return null;
   }
   const selectedMedia = useTimelineStore((state) => state.selectedMedia);
-  const setSelectedMedia = useTimelineStore((state) => state.setSelectedMedia);
 
   const playhead = useTimelineStore((state) => state.playhead);
   const resizeMediaStart = useTimelineStore((state) => state.resizeMediaStart);
@@ -57,7 +56,7 @@ const Media = ({ trackId, mediaId, displayPreview }: MediaProps) => {
 
   function handleDragResize(event: DragMoveEvent) {
     const deltaX = event.delta.x < 0 ? Math.min(event.delta.x, -1) : Math.max(event.delta.x, 1);
-
+    console.log(event)
     if (event.active.data.current?.position === 'start') {
 
       const deltaFromPreviousCall = deltaX - previousDelta;
@@ -77,10 +76,6 @@ const Media = ({ trackId, mediaId, displayPreview }: MediaProps) => {
     setPreviousDelta(0);
   }
 
-  function handleClick() {
-    setSelectedMedia([trackId, mediaId]);
-  }
-
   function handleInnerClick(event: React.MouseEvent) {
     event.stopPropagation();
   }
@@ -90,7 +85,6 @@ const Media = ({ trackId, mediaId, displayPreview }: MediaProps) => {
       ref={setNodeRef}
       {...attributes}
       {...listeners}
-
       className={cn("absolute border-2 rounded-md p-2 h-12 flex items-center justify-center",
         `${shouldPlay ? 'bg-primary-yellow' : 'bg-secondary-grey'}`,
         `${selectedMedia?.[0] == trackId && selectedMedia[1] == mediaId ? 'border-primary-blue' : 'border-primary-yellow'}`,)
@@ -102,11 +96,9 @@ const Media = ({ trackId, mediaId, displayPreview }: MediaProps) => {
         modifiers={[restrictToHorizontalAxis]}
         onDragMove={handleDragResize}
         onDragEnd={handleDragResizeEnd}
-        onDragStart={handleClick}
-
       >
         {displayPreview === 'start'
-          ? <div onClick={handleInnerClick} className='absolute h-12 w-4 top-[-2px] left-[-2px] bg-primary-blue' />
+          ? <div onClick={handleInnerClick} className='absolute h-12 w-4 top-[-2px] left-[-2px] bg-primary-blue cursor-e-resize' />
           : null
         }
         <MediaResizer position={'start'} mediaId={mediaId} />
@@ -116,7 +108,7 @@ const Media = ({ trackId, mediaId, displayPreview }: MediaProps) => {
         <div ref={setNodeSecondThirdRed} className='absolute h-12 w-1/3 top-[-2px] left-2/3 translate-x-[2px] -z-10 border border-red-600' />
         <MediaResizer position={'end'} mediaId={mediaId} />
         {displayPreview === 'end'
-          ? <div onClick={handleInnerClick} className='absolute h-12 w-4 top-[-2px] right-[-2px] bg-primary-blue' />
+          ? <div onClick={handleInnerClick} className='absolute h-12 w-4 top-[-2px] right-[-2px] bg-primary-blue cursor-w-resize' />
           : null
         }
       </DndContext>
