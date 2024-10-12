@@ -2,8 +2,6 @@ import { Canvas } from '@react-three/fiber'
 import React, { useEffect, useRef } from 'react'
 import VideoMesh from './video-mesh'
 import InfoTexture from './info-texture'
-import LoadVideoTexture from './load-video-texture'
-import UpdateTexture from './update-texture'
 import useVideoPlayerStore from '~/store/video-player-store'
 
 const TwoDCanvas = () => {
@@ -11,7 +9,6 @@ const TwoDCanvas = () => {
   const setCanvasRef = useVideoPlayerStore((state) => state.setCanvasRef);
   const initialiseMediaRecorder = useVideoPlayerStore((state) => state.initialiseMediaRecorder);
   const ref = useRef(null);
-
 
   useEffect(() => {
     if (!canvasRef || !canvasRef.current) return;
@@ -26,13 +23,7 @@ const TwoDCanvas = () => {
 
   return (
     <div className='h-full'>
-      <Canvas
-        ref={ref}
-        orthographic
-        className=''
-      >
-        <LoadVideoTexture />
-        <UpdateTexture />
+      <Canvas ref={ref} orthographic>
         <ambientLight intensity={1} />
         <VideoMesh />
         <InfoTexture />

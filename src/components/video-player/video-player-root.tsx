@@ -1,17 +1,24 @@
 "use client";
 
 import React from 'react'
-import CanvasProvider from './canvas-provider'
-import SceneContent from './scene-content'
-import useExportSubscriber from './useExportSubscriber';
+import useExportSubscriber from './hooks/useExportSubscriber';
+import useVideoPlayerStore from '~/store/video-player-store';
+import TwoDCanvas from './2Dcanvas';
+import ThreeDCanvas from './3Dcanvas';
 
 const VideoPlayerRoot = () => {
   useExportSubscriber();
-  
+  const display2DCanvas = useVideoPlayerStore((state) => state.display2DCanvas);
+
   return (
-    <CanvasProvider>
-      <SceneContent />
-    </CanvasProvider>
+    <div className='flex flex-1 flex-row w-screen overflow-hidden'>
+      <div className={display2DCanvas ? 'm-auto' : 'absolute -left-[-10000px]'}>
+        <TwoDCanvas />
+      </div>
+      <div className={display2DCanvas ? 'absolute -left-[-10000px]' : 'w-full'}>
+        <ThreeDCanvas />
+      </div>
+    </div>
   )
 }
 

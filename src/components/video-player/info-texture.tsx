@@ -3,7 +3,6 @@ import { useFrame, Vector3 } from "@react-three/fiber";
 import { useState } from "react";
 
 function InfoTexture() {
-
   const infoTexture = useTexture('/info-icon.png');
   const [position, setPosition] = useState<Vector3>([0, -200, 0]);
 

@@ -16,14 +16,11 @@ const ThreeDCanvas = () => {
 
   if (!texture) return null;
   texture.repeat.x = -1;
-  texture.wrapS = THREE.RepeatWrapping; 
+  texture.wrapS = THREE.RepeatWrapping;
 
   return (
     <div className='w-full h-full'>
-      <Canvas
-        ref={canvasRef}
-        className='w-full h-full'
-      >
+      <Canvas ref={canvasRef} className='w-full h-full' >
         <ambientLight intensity={1} />
         <OrbitControls />
         <mesh>
