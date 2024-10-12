@@ -54,3 +54,5 @@ gcp_key.json
 playwright/.auth
 playwright-report
 playwright-snapshots
+
+supabase/

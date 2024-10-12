@@ -1,11 +1,11 @@
-import { bucket } from '~/server/lib/storage';
+// import { bucket } from '~/server/lib/storage';
 import { bucket as devBucket } from '~/server/lib/supabase';
 
 const deleteFile = async (path: string) => {
   if (process.env.NODE_ENV === 'development') {
     await devBucket.remove([path]);
   } else {
-    await bucket.file(path).delete();
+    // await bucket.file(path).delete();
   }
 };
 
@@ -20,13 +20,13 @@ const createSignedUploadUrl = async (path: string) => {
     return data?.signedUrl || '';
   }
 
-  const file = bucket.file(path);
+  // const file = bucket.file(path);
 
-  return file.getSignedUrl({
-    version: 'v4',
-    action: 'write',
-    expires: Date.now() + 15 * 60 * 1000, // 15 minutes
-  });
+  // return file.getSignedUrl({
+  //   version: 'v4',
+  //   action: 'write',
+  //   expires: Date.now() + 15 * 60 * 1000, // 15 minutes
+  // });
 };
 
 const createSignedUrl = async (path: string) => {
@@ -40,15 +40,15 @@ const createSignedUrl = async (path: string) => {
     return data?.signedUrl || '';
   }
 
-  const file = bucket.file(path);
+  // const file = bucket.file(path);
 
-  const [signedUrl] = await file.getSignedUrl({
-    version: 'v4',
-    action: 'read',
-    expires: Date.now() + 60 * 1000, // 1 minute
-  });
+  // const [signedUrl] = await file.getSignedUrl({
+  //   version: 'v4',
+  //   action: 'read',
+  //   expires: Date.now() + 60 * 1000, // 1 minute
+  // });
 
-  return signedUrl;
+  // return signedUrl;
 };
 
 const getPublicUrl = (path: string) => {
@@ -58,9 +58,25 @@ const getPublicUrl = (path: string) => {
     return data?.publicUrl || '';
   }
 
-  const file = bucket.file(path);
+  // const file = bucket.file(path);
 
-  return file.publicUrl();
+  // return file.publicUrl();
 };
 
-export { deleteFile, createSignedUrl, createSignedUploadUrl, getPublicUrl };
+const uploadVideo = async (fileName: string, file: Buffer) => {
+  if (process.env.NODE_ENV === 'development') {
+    const { data, error: uploadError } = await devBucket.upload(`videos/${fileName}.mp4`, file, {
+      contentType: 'video/mp4',
+    });
+    if (uploadError) {
+      console.error('Erreur lors de l\'upload du fichier vers Supabase :', uploadError);
+      return null;
+    }
+
+    return data?.path || null;
+  } else {
+    // await bucket.file(path).save(file);
+  }
+};
+
+export { deleteFile, createSignedUrl, createSignedUploadUrl, getPublicUrl, uploadVideo };

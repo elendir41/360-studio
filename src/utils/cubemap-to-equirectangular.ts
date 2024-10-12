@@ -116,7 +116,7 @@ export class CubemapToEquirectangular {
     this.cubeCamera = null;
     this.attachedCamera = null;
 
-    this.setSize(2048, 1024);
+    this.setSize(4096, 2048);
 
     const gl = this.renderer.getContext();
     if (gl) {
@@ -124,7 +124,7 @@ export class CubemapToEquirectangular {
     }
 
     if (provideCubeCamera) {
-      this.getCubeCamera(1024);
+      this.getCubeCamera(2048);
     }
 
     this.startDownload();
@@ -183,15 +183,15 @@ export class CubemapToEquirectangular {
     this.renderer.render(this.scene, this.camera);
 
     const pixels = new Uint8Array(4 * this.width * this.height);
-    this.renderer.readRenderTargetPixels(this.output, 0, 0, this.width, this.height, pixels)
-    // .then(() => {
+    // this.renderer.copyFramebufferToTexture(this.output, 0, 0, this.width, this.height, this.cubeCamera.renderTarget.texture);
+    this.renderer.readRenderTargetPixelsAsync(this.output, 0, 0, this.width, this.height, pixels)
+    .then(() => {
       const imageData = new ImageData(new Uint8ClampedArray(pixels), this.width, this.height);
       
       if (download !== false) {
         this.download(imageData);
-      }
-      
-    // });
+      }  
+    });
     this.renderer.setRenderTarget(null);
 
 
