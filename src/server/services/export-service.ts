@@ -1,7 +1,7 @@
 import path from 'path';
 import fs from 'fs';
 import ffmpeg from 'fluent-ffmpeg';
-import { createSignedUrl, uploadVideo } from '../utils/file';
+import { createSignedUrl, getPublicUrl, uploadVideo } from '../utils/file';
 import { createMediaService } from './media-service';
 import createError from 'http-errors';
 
@@ -35,7 +35,7 @@ export const exportToMp4Service = async (fileName: string, videoFile: File) => {
     await new Promise((resolve, reject) => {
       ffmpeg(tempFilePath)
         .output(outputFilePath)
-        .on('end',resolve)
+        .on('end', resolve)
         .on('error', (err) => reject(new Error(`Erreur lors de la conversion vidéo : ${err.message}`)))
         .run();
     });
@@ -48,11 +48,12 @@ export const exportToMp4Service = async (fileName: string, videoFile: File) => {
     }
 
     const fileSignedUrl = await createSignedUrl(storagePath);
+    const filePublicUrl = getPublicUrl(storagePath);
 
     await createMediaService({
       name: fileName,
       type: 'video/mp4',
-      url: storagePath,
+      url: filePublicUrl,
       ext: 'mp4',
       size: videoFile.size,
     });
