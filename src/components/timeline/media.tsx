@@ -56,7 +56,6 @@ const Media = ({ trackId, mediaId, displayPreview }: MediaProps) => {
 
   function handleDragResize(event: DragMoveEvent) {
     const deltaX = event.delta.x < 0 ? Math.min(event.delta.x, -1) : Math.max(event.delta.x, 1);
-    console.log(event)
     if (event.active.data.current?.position === 'start') {
 
       const deltaFromPreviousCall = deltaX - previousDelta;
