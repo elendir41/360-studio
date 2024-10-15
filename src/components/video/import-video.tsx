@@ -20,12 +20,12 @@ const ImportVideo = (props) => {
 
   const uploadInputFile = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    const args : Args= {
+    const args: Args = {
       file: file,
       name: file.name,
       type: 'media',
       onProgress: (progress: number) => console.log(progress),
-      getCancel: (cancel: () => void) => {}
+      getCancel: (cancel: () => void) => { }
     };
 
 
@@ -34,17 +34,13 @@ const ImportVideo = (props) => {
   }
 
   return (
-      <div className={cn(
-              'flex items-center justify-center bg-gray-100 rounded-xl border border-gray-300 w-min px-4 py-3 transition',
-              'hover:bg-gray-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500',
-              props.className
-            )}
-           onClick={() => (document.querySelector('#input-file') as HTMLInputElement).click()}
-      >
-        <Input type='file' id='input-file' onChange={uploadInputFile} accept="video/mp4"
-               className='hidden' />
-        <Icon icon='rivet-icons:upload' />
-      </div>
+    <Button
+      onClick={() => (document.querySelector('#input-file') as HTMLInputElement).click()}
+    >
+      <Input type='file' id='input-file' onChange={uploadInputFile} accept="video/mp4"
+        className='hidden' />
+      <Icon icon='rivet-icons:upload' />
+    </Button>
   )
 }
 
