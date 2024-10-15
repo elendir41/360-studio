@@ -8,14 +8,17 @@ const TimelineHeader = () => {
   const playhead = useTimelineStore((state) => state.playhead);
   const duration = useTimelineStore((state) => state.duration);
   const isPlaying = useTimelineStore((state) => state.isPlaying);
+  const canCutMedia = useTimelineStore((state) => state.canCutMedia);
   const play = useTimelineStore((state) => state.play);
   const pause = useTimelineStore((state) => state.pause);
   const setPlayhead = useTimelineStore((state) => state.setPlayhead);
   const incrementZoom = useTimelineStore((state) => state.incrementZoom);
+  const cutMedia = useTimelineStore((state) => state.cutMedia);
 
   return (
     <header className='flex gap-2 items-center p-2'>
       <p>{formatHHMMSSmm(playhead)} / {formatHHMMSSmm(duration)}</p>
+      <Button onClick={cutMedia} disabled={!canCutMedia}>Couper</Button>
       <Button onClick={play} className='ml-auto' disabled={isPlaying || playhead === duration}>Lecture</Button>
       <Button onClick={pause} disabled={!isPlaying}>Pause</Button>
       <Button onClick={() => setPlayhead(0)}>Reset</Button>

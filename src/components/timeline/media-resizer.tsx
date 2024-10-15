@@ -18,7 +18,7 @@ function MediaResizer({position, mediaId}: MediaResizerProps) {
       ref={setNodeRef}
       {...listeners}
       {...attributes}
-      className={`absolute h-12 w-4 top-[-2px] ${position === 'start' ? 'left-[-2px]' : 'right-[-2px]'} `}
+      className={`absolute h-12 w-4 top-[-2px] cursor-ew-resize ${position === 'start' ? 'left-[-2px]' : 'right-[-2px]'} `}
     />
   );
 }

@@ -21,6 +21,7 @@ const Media = ({ trackId, mediaId, displayPreview }: MediaProps) => {
   if (!media) {
     return null;
   }
+  const selectedMedia = useTimelineStore((state) => state.selectedMedia);
 
   const playhead = useTimelineStore((state) => state.playhead);
   const resizeMediaStart = useTimelineStore((state) => state.resizeMediaStart);
@@ -55,7 +56,6 @@ const Media = ({ trackId, mediaId, displayPreview }: MediaProps) => {
 
   function handleDragResize(event: DragMoveEvent) {
     const deltaX = event.delta.x < 0 ? Math.min(event.delta.x, -1) : Math.max(event.delta.x, 1);
-
     if (event.active.data.current?.position === 'start') {
 
       const deltaFromPreviousCall = deltaX - previousDelta;
@@ -75,14 +75,18 @@ const Media = ({ trackId, mediaId, displayPreview }: MediaProps) => {
     setPreviousDelta(0);
   }
 
+  function handleInnerClick(event: React.MouseEvent) {
+    event.stopPropagation();
+  }
+
   return (
     <li
       ref={setNodeRef}
       {...attributes}
       {...listeners}
-
-      className={cn("absolute border-primary-yellow border-2 rounded-md p-2 h-12 flex items-center justify-center",
-        `${shouldPlay ? 'bg-primary-yellow' : 'bg-secondary-grey'}`)
+      className={cn("absolute border-2 rounded-md p-2 h-12 flex items-center justify-center",
+        `${shouldPlay ? 'bg-primary-yellow' : 'bg-secondary-grey'}`,
+        `${selectedMedia?.[0] == trackId && selectedMedia[1] == mediaId ? 'border-primary-blue' : 'border-primary-yellow'}`,)
       }
       style={{width: `${width}px`,left: `${left}px`,}}
     >
@@ -93,17 +97,17 @@ const Media = ({ trackId, mediaId, displayPreview }: MediaProps) => {
         onDragEnd={handleDragResizeEnd}
       >
         {displayPreview === 'start'
-          ? <div className='absolute h-12 w-4 top-[-2px] left-[-2px] bg-primary-blue' />
+          ? <div onClick={handleInnerClick} className='absolute h-12 w-4 top-[-2px] left-[-2px] bg-primary-blue cursor-e-resize' />
           : null
         }
         <MediaResizer position={'start'} mediaId={mediaId} />
-        <p className='text-center'>{media.name} début: {formatSSmm(left / zoom)} durée: {formatSSmm(media.displayTime)}</p>
+        <p onClick={handleInnerClick} className='text-center'>{media.name} début: {formatSSmm(left / zoom)} durée: {formatSSmm(media.displayTime)}</p>
         <div ref={setNodeContainerRef} className='absolute h-12 top-[-2px] left-[-2px] -z-10 border border-green-600' style={{ width: `${width}px` }} />
         <div ref={setNodeFirstThirdRed} className='absolute h-12 w-1/3 top-[-2px] left-0 -translate-x-[2px] -z-10 border border-blue-600' />
         <div ref={setNodeSecondThirdRed} className='absolute h-12 w-1/3 top-[-2px] left-2/3 translate-x-[2px] -z-10 border border-red-600' />
         <MediaResizer position={'end'} mediaId={mediaId} />
         {displayPreview === 'end'
-          ? <div className='absolute h-12 w-4 top-[-2px] right-[-2px] bg-primary-blue' />
+          ? <div onClick={handleInnerClick} className='absolute h-12 w-4 top-[-2px] right-[-2px] bg-primary-blue cursor-w-resize' />
           : null
         }
       </DndContext>
