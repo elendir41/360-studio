@@ -2,6 +2,7 @@ import React from 'react'
 import useTimelineStore from '~/store/timeline-store';
 import Button from '../button';
 import { formatHHMMSSmm } from '~/utils/format-time';
+import ImportVideo from '../video/import-video';
 
 const TimelineHeader = () => {
   const playhead = useTimelineStore((state) => state.playhead);
@@ -21,6 +22,7 @@ const TimelineHeader = () => {
       <Button onClick={() => setPlayhead(duration)}>Max</Button>
       <Button onClick={() => incrementZoom(-50)}>-</Button>
       <Button onClick={() => incrementZoom(50)}>+</Button>
+      <ImportVideo />
     </header>
   )
 }

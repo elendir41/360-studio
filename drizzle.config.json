@@ -1,0 +1,9 @@
+{
+  "dialect": "postgresql",
+  "schema": "src/server/schema.ts",
+  "out": "drizzle",
+  "db": {
+    "connectionString": "http://127.0.0.1:54321",
+    "driver": "postgresql"
+  }
+}
