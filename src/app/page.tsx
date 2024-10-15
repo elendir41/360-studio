@@ -1,11 +1,11 @@
-import * as React from 'react';
-import ThreeScene from '~/components/three/three-scene';
 import Timeline from '~/components/timeline/timeline';
+
+import VideoPlayerRoot from '~/components/video-player/video-player-root';
 
 const Page = () => {
   return (
     <main className='flex flex-col h-full'>
-      <ThreeScene />
+      <VideoPlayerRoot />
       <Timeline />
     </main>
   );
