@@ -63,4 +63,27 @@ const getPublicUrl = (path: string) => {
   return file.publicUrl();
 };
 
-export { deleteFile, createSignedUrl, createSignedUploadUrl, getPublicUrl };
+const uploadVideo = async (fileName: string, file: Buffer) => {
+  const storagePath = `videos/${fileName}.mp4`;
+
+  if (process.env.NODE_ENV === 'development') {
+    const { error: uploadError } = await devBucket.upload(storagePath, file, {
+      contentType: 'video/mp4',
+    });
+    if (uploadError) {
+      console.error('Erreur lors de l\'upload du fichier vers Supabase :', uploadError);
+      return null;
+    }
+
+  } else {
+    try {
+      await bucket.file(storagePath).save(file);
+    } catch (error) {
+      console.error('Erreur lors de l\'upload du fichier vers GCS :', error);
+      return null;
+    }
+  }
+  return storagePath;
+};
+
+export { deleteFile, createSignedUrl, createSignedUploadUrl, getPublicUrl, uploadVideo };
