@@ -3,6 +3,12 @@ import { Track } from "~/types/timeline";
 import { MediaTimeline, MediaType } from "~/types/media-timeline";
 import addToast from "~/utils/add-toast";
 
+/**
+ * Global zustand store for the timeline
+ *
+ * Handles the play/pause, tracks, move, cut and resize media
+ */
+
 const MIN_MEDIA_DURATION = 1;
 
 type TimelineStore = {

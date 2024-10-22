@@ -4,6 +4,10 @@ import { Canvas } from '@react-three/fiber';
 import { Suspense, useRef } from 'react';
 import BasicScene from './basic-scene';
 
+/**
+ * Root component for a basic three scene with a cube and orbit controls
+ */
+
 const ThreeScene = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);

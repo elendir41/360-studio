@@ -1,26 +1,36 @@
 import * as THREE from 'three';
 import { create } from 'zustand';
-import addToast from '~/utils/add-toast';
 import { exportVideo } from '~/utils/export-video';
 
+/**
+ * Global zustand store for the video player
+ *
+ *  Handles the recording of the video, the display of the 2D canvas and the export to the backend
+ */
 
 type VideoPlayerStore = {
   canvasRef: React.RefObject<HTMLCanvasElement> | null;
-  setCanvasRef: (canvasRef: React.RefObject<HTMLCanvasElement>) => void;
   texture: THREE.CanvasTexture | null;
-  setTexture: (texture: THREE.CanvasTexture | null) => void;
   videoTexture: THREE.VideoTexture | null;
-  setVideoTexture: (videTexture: THREE.VideoTexture | null) => void;
+
   recording: boolean;
-  toggleRecording: () => void;
   mediaRecorder: MediaRecorder | null;
   chunks: Blob[];
+
+  display2DCanvas: boolean;
+
+  storeStatus: {type: 'error' | 'success' | 'info' | 'warning', title: string, content: string} | null;
+
+  setCanvasRef: (canvasRef: React.RefObject<HTMLCanvasElement>) => void;
+  setTexture: (texture: THREE.CanvasTexture | null) => void;
+  setVideoTexture: (videTexture: THREE.VideoTexture | null) => void;
+
+  toggleRecording: () => void;
   initialiseMediaRecorder: () => void;
   startMediaRecorder: () => void;
   stopMediaRecorder: () => void;
-  display2DCanvas: boolean;
+
   setDisplay2DCanvas: (display: boolean) => void;
-  storeStatus: {type: 'error' | 'success' | 'info' | 'warning', title: string, content: string} | null;
 }
 
 const useVideoPlayerStore = create<VideoPlayerStore>((set) => ({
