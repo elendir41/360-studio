@@ -5,6 +5,11 @@ import { formatHHMMSSmm } from '~/utils/format-time';
 import useVideoPlayerStore from '~/store/video-player-store';
 import ImportVideo from '../video/import-video';
 
+/**
+ * Lots of buttons to control the timeline
+ * Not the best UX, it's just for development
+ */
+
 const TimelineHeader = () => {
   const playhead = useTimelineStore((state) => state.playhead);
   const duration = useTimelineStore((state) => state.duration);

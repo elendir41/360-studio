@@ -2,6 +2,11 @@ import { useTexture } from "@react-three/drei";
 import { useFrame, Vector3 } from "@react-three/fiber";
 import { useState } from "react";
 
+/**
+ * Just a simple sprite with an info icon texture that follows the mouse pointer
+ * It's used to test how to integrate motion design elements in the 3D scene
+ */
+
 function InfoTexture() {
   const infoTexture = useTexture('/info-icon.png');
   const [position, setPosition] = useState<Vector3>([0, -200, 0]);

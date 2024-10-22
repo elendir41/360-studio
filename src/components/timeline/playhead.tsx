@@ -7,6 +7,10 @@ type PlayheadProps = {
   containerRef: React.RefObject<HTMLElement>;
 };
 
+/**
+ * Display the playhead on the timeline
+ */
+
 const Playhead = ({ containerRef }: PlayheadProps) => {
   const playhead = useTimelineStore((state) => state.playhead);
   const zoom = useTimelineStore((state) => state.zoom);

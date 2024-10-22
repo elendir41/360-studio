@@ -20,6 +20,9 @@ const ImportVideo = (props) => {
 
   const uploadInputFile = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
+    if (!file) {
+      return;
+    }
     const args: Args = {
       file: file,
       name: file.name,

@@ -13,11 +13,14 @@ type TrackProps = {
   trackId: number;
 }
 
+/**
+ * Component that represents a track on the timeline
+ * Display all the media items of the track and handle the drag and drop thanks to DndKit
+ */
+
 const Track = ({ trackId }: TrackProps) => {
+
   const track = useTimelineStore((state) => state.tracks.find((track) => track.id === trackId));
-
-
-
   const [previewItem, setPreviewItem] = useState<PreviewMediaItem | null>(null);
   const [previousDelta, setPreviousDelta] = useState(0);
   const moveMediaTimeline = useTimelineStore((state) => state.moveMediaTimeline);

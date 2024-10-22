@@ -8,6 +8,11 @@ import { useRef } from "react";
 import TimeIndicator from "./time-indicator";
 import Cursor from "./cursor";
 
+/**
+ * Root component for the timeline
+ * Only import this component in the main app
+ */
+
 const Timeline = () => {
   const tracks = useTimelineStore((state) => state.tracks);
   const duration = useTimelineStore((state) => state.duration);

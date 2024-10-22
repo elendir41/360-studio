@@ -8,6 +8,10 @@ type CursorProps = {
   containerRef: React.RefObject<HTMLElement>;
 };
 
+/**
+ * Cursor that follows the mouse on the timeline
+ */
+
 const Cursor = ({ containerRef }: CursorProps) => {
   const zoom = useTimelineStore((state) => state.zoom);
   const [height, setHeight] = useState(0);

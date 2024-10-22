@@ -2,11 +2,15 @@
 
 import useTimelineStore from '~/store/timeline-store';
 
+/**
+ * Display the time indicator on the timeline every second
+ */
+
 const TimeIndicator = () => {
   const duration = useTimelineStore((state) => state.duration);
   const zoom = useTimelineStore((state) => state.zoom);
   const times: number[] = Array.from({length: duration + 1}, (_, i) => i);
-  
+
   return (
     <div className='relative mb-2 h-7' style={{ width: `${duration * zoom}px`}}>
       {times.map((time) => (

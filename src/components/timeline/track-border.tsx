@@ -1,6 +1,10 @@
 import { useDroppable } from '@dnd-kit/core';
 import React from 'react'
 
+/**
+ * Component that represents the border of the track for drag and drop
+ */
+
 const TrackBorder = () => {
   const { setNodeRef: startNodeRef } = useDroppable({
     id: `track-border-start`,

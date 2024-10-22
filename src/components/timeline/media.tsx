@@ -15,6 +15,11 @@ type MediaProps = {
   displayPreview: 'start' | 'end' | 'none';
 };
 
+/**
+ * Component that represents a media item on the timeline
+ * It can be resized thanks to DndKit
+ */
+
 const Media = ({ trackId, mediaId, displayPreview }: MediaProps) => {
   const media = useTimelineStore((state) => state.tracks.find((track) => track.id === trackId)?.items.find((item) => item.id === mediaId));
   const zoom = useTimelineStore((state) => state.zoom);
@@ -46,6 +51,7 @@ const Media = ({ trackId, mediaId, displayPreview }: MediaProps) => {
     id: `media-${mediaId}-container`,
   });
 
+  // Used to detect when the media is dragged to the first or last third of the container in order to display a preview
   const { setNodeRef: setNodeFirstThirdRed } = useDroppable({
     id: `media-${mediaId}-first-third`,
   });

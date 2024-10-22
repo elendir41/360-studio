@@ -2,6 +2,10 @@ import { useFrame } from "@react-three/fiber";
 import * as THREE from 'three';
 import useVideoPlayerStore from "~/store/video-player-store";
 
+/**
+ * Hook that get the texture from the canvas and save it in the store
+*/
+
 const useUpdateTexture = () => {
   const canvasRef = useVideoPlayerStore((state) => state.canvasRef);
   const texture = useVideoPlayerStore((state) => state.texture);

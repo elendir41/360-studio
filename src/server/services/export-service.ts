@@ -5,6 +5,14 @@ import { createSignedUrl, getPublicUrl, uploadVideo } from '../utils/file';
 import { createMediaService } from './media-service';
 import createError from 'http-errors';
 
+/**
+ * Export a video to mp4 format
+ * Save it to the storage and in the database
+ *
+ * Create a temporary file from the video file and convert it to mp4 with ffmpeg
+ */
+
+
 const MAX_SIZE_FILE = 10 * 1024 * 1024; // 10MB
 
 const saveTemporaryFile = async (fileName: string, videoFile: File) => {

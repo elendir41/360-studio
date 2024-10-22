@@ -6,6 +6,11 @@ import useVideoPlayerStore from '~/store/video-player-store';
 import TwoDCanvas from './2Dcanvas';
 import ThreeDCanvas from './3Dcanvas';
 
+/**
+ * Root component for the video player
+ * Only import this component in the main app
+ */
+
 const VideoPlayerRoot = () => {
   useExportSubscriber();
   const display2DCanvas = useVideoPlayerStore((state) => state.display2DCanvas);
