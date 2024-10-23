@@ -42,32 +42,37 @@ const useTimelineStore = create<TimelineStore>((set) => ({
     id: 1, items: [
       new MediaTimeline({
         id: 1,
-        type: MediaType.IMAGE,
+        type: MediaType.MOTION_DESIGN,
         source: 'https://via.placeholder.com/150',
-        name: 'Image 1',
+        name: 'Motion Design 1',
         duration: 10,
         originTime: 0,
         startOffset: 0,
         endOffset: 0,
       }),
-      // new MediaTimeline({
-      //   id: 2,
-      //   type: MediaType.VIDEO,
-      //   source: 'https://www.w3schools.com/html/mov_bbb.mp4',
-      //   name: 'Video 1',
-      //   duration: 10,
-      //   startTime: 10,
-      //   startOffset: 0,
-      //   endOffset: 0,
-      // }),
-    ]
+    ],
+    mediaType: MediaType.MOTION_DESIGN,
   }, {
     id: 2, items: [
       new MediaTimeline({
+        id: 2,
+        type: MediaType.MOTION_DESIGN,
+        source: 'https://via.placeholder.com/150',
+        name: 'Motion Design 2',
+        duration: 8,
+        originTime: 1,
+        startOffset: 0,
+        endOffset: 0,
+      }),
+    ],
+    mediaType: MediaType.MOTION_DESIGN,
+  }, {
+    id: 3, items: [
+      new MediaTimeline({
         id: 3,
-        type: MediaType.AUDIO,
+        type: MediaType.IMAGE,
         source: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
-        name: 'Audio 1',
+        name: 'Img 1',
         duration: 10,
         originTime: -5,
         startOffset: 8,
@@ -75,9 +80,9 @@ const useTimelineStore = create<TimelineStore>((set) => ({
       }),
       new MediaTimeline({
         id: 4,
-        type: MediaType.MOTION_DESIGN,
+        type: MediaType.IMAGE,
         source: 'https://www.w3schools.com/html/mov_bbb.mp4',
-        name: 'Motion Design 1',
+        name: 'Img 2',
         duration: 10,
         originTime: -2,
         startOffset: 8,
@@ -87,13 +92,84 @@ const useTimelineStore = create<TimelineStore>((set) => ({
         id: 5,
         type: MediaType.IMAGE,
         source: 'https://via.placeholder.com/150',
-        name: 'Image 2',
+        name: 'Image 3',
         duration: 4,
         originTime: 9,
         startOffset: 0,
         endOffset: 0,
       }),
-    ]
+    ],
+    mediaType: MediaType.IMAGE,
+  }, {
+    id: 4, items: [
+      new MediaTimeline({
+        id: 6,
+        type: MediaType.IMAGE,
+        source: 'https://via.placeholder.com/150',
+        name: 'Image 4',
+        duration: 8,
+        originTime: 1,
+        startOffset: 0,
+        endOffset: 0,
+      }),
+    ],
+    mediaType: MediaType.IMAGE,
+  }, {
+    id: 5, items: [
+      new MediaTimeline({
+        id: 7,
+        type: MediaType.VIDEO,
+        source: 'https://via.placeholder.com/150',
+        name: 'Video 1',
+        duration: 8,
+        originTime: 1,
+        startOffset: 0,
+        endOffset: 0,
+      }),
+    ],
+    mediaType: MediaType.VIDEO,
+  }, {
+    id: 6, items: [
+      new MediaTimeline({
+        id: 8,
+        type: MediaType.VIDEO,
+        source: 'https://via.placeholder.com/150',
+        name: 'Video 2',
+        duration: 8,
+        originTime: 1,
+        startOffset: 0,
+        endOffset: 0,
+      }),
+    ],
+    mediaType: MediaType.VIDEO,
+  }, {
+    id: 7, items: [
+      new MediaTimeline({
+        id: 9,
+        type: MediaType.AUDIO,
+        source: 'https://via.placeholder.com/150',
+        name: 'Audio 1',
+        duration: 8,
+        originTime: 1,
+        startOffset: 0,
+        endOffset: 0,
+      }),
+    ],
+    mediaType: MediaType.AUDIO,
+  }, {
+    id: 8, items: [
+      new MediaTimeline({
+        id: 10,
+        type: MediaType.AUDIO,
+        source: 'https://via.placeholder.com/150',
+        name: 'Audio 2',
+        duration: 8,
+        originTime: 1,
+        startOffset: 0,
+        endOffset: 0,
+      }),
+    ],
+    mediaType: MediaType.AUDIO,
   }],
   isPlaying: false,
   selectedMedia: null,

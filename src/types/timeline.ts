@@ -1,8 +1,9 @@
-import { MediaTimeline } from "./media-timeline";
+import { MediaTimeline, MediaType } from "./media-timeline";
 
 type Track = {
   id: number;
   items: MediaTimeline[];
+  mediaType: MediaType;
 }
 
 type Timeline = {
