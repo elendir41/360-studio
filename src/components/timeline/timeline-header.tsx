@@ -19,6 +19,7 @@ const TimelineHeader = () => {
   const stopMediaRecorder = useVideoPlayerStore((state) => state.stopMediaRecorder);
   const display2DCanvas = useVideoPlayerStore((state) => state.display2DCanvas);
   const setDisplay2DCanvas = useVideoPlayerStore((state) => state.setDisplay2DCanvas);
+  const videoTexture = useVideoPlayerStore((state) => state.videoTexture);
 
   function handleRecording() {
     if (!recording) {
@@ -45,10 +46,25 @@ const TimelineHeader = () => {
   }
   const cutMedia = useTimelineStore((state) => state.cutMedia);
 
+  function handlePlayPause() {
+    if (isPlaying) {
+      pause();
+      console.log('pause before update', videoTexture.image.paused);
+      videoTexture && videoTexture.image.pause();
+      console.log('pause after update', videoTexture.image.paused);
+    }
+    else {
+      play();
+      console.log('play before update', videoTexture.image.paused);
+      videoTexture && videoTexture.image.play();
+      console.log('play after update', videoTexture.image.paused);
+    }
+  }
+
   return (
     <header className='flex gap-2 items-center p-2'>
       <p>{formatHHMMSSmm(playhead)} / {formatHHMMSSmm(duration)}</p>
-      <Button onClick={isPlaying ? pause : play} className='ml-auto' disabled={recording || playhead === duration}>{displayPlayButtonText()}</Button>
+      <Button onClick={handlePlayPause} className='ml-auto' disabled={recording || playhead === duration}>{displayPlayButtonText()}</Button>
       <Button onClick={() => setDisplay2DCanvas(!display2DCanvas)}>{display2DCanvas ? 'Hide' : 'Show'} 2D Canvas</Button>
       <Button onClick={handleRecording}>{recording ? "Stop" : "Start"} recording</Button>
       <Button onClick={cutMedia} disabled={!canCutMedia}>Couper</Button>
