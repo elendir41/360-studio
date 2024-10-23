@@ -1,17 +1,28 @@
-import { useAspect } from '@react-three/drei';
+import { useAspect, useVideoTexture } from '@react-three/drei';
 import * as THREE from 'three';
 import useVideoPlayerStore from '~/store/video-player-store';
 import useUpdateTexture from './hooks/useUpdateTexture';
-import useLoadVideoTexture from './hooks/useLoadVideoTexture';
+import usePreviewTimelineVideo from './hooks/usePreviewTimelineVideo';
+import useGetCurrentVideoMedia from './hooks/useGetCurrentVideoMedia';
+import { useEffect } from 'react';
 
 function VideoMesh() {
   const videoTexture = useVideoPlayerStore((state) => state.videoTexture);
+  const setVideoTexture = useVideoPlayerStore((state) => state.setVideoTexture);
   const size = useAspect(4096, 2048);
+  const media = useGetCurrentVideoMedia();
+  const currentVideoTexture = useVideoTexture(media?.source ?? "/blackscreen.mp4", {loop: false, autoplay: false, controls: true, playsInline: false});
+
+  useEffect (() => {
+    if (currentVideoTexture) {
+      setVideoTexture(currentVideoTexture);
+    }
+  }, [currentVideoTexture]);
 
   useUpdateTexture();
-  useLoadVideoTexture();
+  usePreviewTimelineVideo();
 
-  if (!videoTexture) return null;
+
   return <>
     <mesh scale={size}>
       <planeGeometry  />

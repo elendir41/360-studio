@@ -21,6 +21,9 @@ type VideoPlayerStore = {
   display2DCanvas: boolean;
   setDisplay2DCanvas: (display: boolean) => void;
   storeStatus: {type: 'error' | 'success' | 'info' | 'warning', title: string, content: string} | null;
+
+  isSeeking: boolean;
+  setIsSeeking: (isSeeking: boolean) => void;
 }
 
 const useVideoPlayerStore = create<VideoPlayerStore>((set) => ({
@@ -32,6 +35,8 @@ const useVideoPlayerStore = create<VideoPlayerStore>((set) => ({
   chunks: [],
   display2DCanvas: true,
   storeStatus: null,
+  isSeeking: false,
+  setIsSeeking: (isSeeking) => set({ isSeeking }),
   setDisplay2DCanvas: (display) => set(() => ({ display2DCanvas: display })),
   toggleRecording: () => set((state) => ({ recording: !state.recording })),
   setCanvasRef: (newCanvasRef) => set((state) => {

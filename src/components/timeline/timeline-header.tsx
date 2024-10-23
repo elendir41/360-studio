@@ -19,6 +19,8 @@ const TimelineHeader = () => {
   const stopMediaRecorder = useVideoPlayerStore((state) => state.stopMediaRecorder);
   const display2DCanvas = useVideoPlayerStore((state) => state.display2DCanvas);
   const setDisplay2DCanvas = useVideoPlayerStore((state) => state.setDisplay2DCanvas);
+  const cutMedia = useTimelineStore((state) => state.cutMedia);
+  const isSeeking = useVideoPlayerStore((state) => state.isSeeking);
 
   function handleRecording() {
     if (!recording) {
@@ -39,16 +41,22 @@ const TimelineHeader = () => {
     else if (isPlaying) {
       return "Pause";
     }
+    else if (isSeeking) {
+      return "Seeking";
+    }
     else {
       return "Play";
     }
   }
-  const cutMedia = useTimelineStore((state) => state.cutMedia);
+
+  function handlePlayPause() {
+    isPlaying ? pause() : play();
+  }
 
   return (
     <header className='flex gap-2 items-center p-2'>
       <p>{formatHHMMSSmm(playhead)} / {formatHHMMSSmm(duration)}</p>
-      <Button onClick={isPlaying ? pause : play} className='ml-auto' disabled={recording || playhead === duration}>{displayPlayButtonText()}</Button>
+      <Button onClick={handlePlayPause} className='ml-auto' disabled={isSeeking || recording || playhead === duration}>{displayPlayButtonText()}</Button>
       <Button onClick={() => setDisplay2DCanvas(!display2DCanvas)}>{display2DCanvas ? 'Hide' : 'Show'} 2D Canvas</Button>
       <Button onClick={handleRecording}>{recording ? "Stop" : "Start"} recording</Button>
       <Button onClick={cutMedia} disabled={!canCutMedia}>Couper</Button>

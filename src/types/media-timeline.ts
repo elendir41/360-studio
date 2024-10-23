@@ -24,7 +24,7 @@ class MediaTimeline {
   name: string;
   originTime: number; //seconds
   startOffset: number; //seconds
-  endOffset: number; //seconds 
+  endOffset: number; //seconds
 
   constructor({ id, type, source, name, duration, originTime, startOffset, endOffset }: MediaTimelineProps) {
     this.id = id;

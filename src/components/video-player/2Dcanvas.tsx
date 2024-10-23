@@ -25,7 +25,7 @@ const TwoDCanvas = () => {
     <div className='h-full'>
       <Canvas ref={ref} orthographic>
         <ambientLight intensity={1} />
-        <VideoMesh />
+          <VideoMesh/>
         <InfoTexture />
       </Canvas>
     </div>
