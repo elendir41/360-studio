@@ -49,6 +49,7 @@ const Track = ({ trackId, mediaType }: TrackProps) => {
     if (targetId) {
       moveMediaOrder(trackId, mediaId, parseInt(targetId, 10));
     }
+    setSelectedMedia([trackId, mediaId]);
   }
 
   function handleDragMove(event: DragMoveEvent) {

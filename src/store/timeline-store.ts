@@ -13,6 +13,8 @@ type TimelineStore = {
   zoom: number;
   selectedMedia: [number, number] | null;
   canCutMedia: boolean;
+  canChangeTrackMediaUp: boolean;
+  canChangeTrackMediaDown: boolean;
 
   setZoom: (zoom: number) => void;
   incrementZoom: (increment: number) => void;
@@ -29,6 +31,7 @@ type TimelineStore = {
 
   setSelectedMedia: (mediaId: [number, number]) => void;
   cutMedia: () => void;
+  changeTrackMedia: (up: boolean) => void;
 
   play: () => void;
   pause: () => void;
@@ -174,6 +177,8 @@ const useTimelineStore = create<TimelineStore>((set) => ({
   isPlaying: false,
   selectedMedia: null,
   canCutMedia: false,
+  canChangeTrackMediaUp: false,
+  canChangeTrackMediaDown: false,
 
   setPlayhead: (playhead) => set((state) => {
     const selectedMedia = state.selectedMedia;
@@ -378,16 +383,45 @@ const useTimelineStore = create<TimelineStore>((set) => ({
     return { tracks: [...state.tracks] };
   }),
 
-  setSelectedMedia: (selectedMedia) => set((state) =>
-    {
-      const media = state.tracks.find((track) => track.id === selectedMedia?.[0])?.items.find((item) => item.id === selectedMedia?.[1]);
-      if (!media) {
-        return { selectedMedia, canCutMedia: false };
-      }
+  setSelectedMedia: (selectedMedia) => set((state) => {
+    console.log(selectedMedia[0]);
+    const media = state.tracks.find((track) => track.id === selectedMedia?.[0])?.items.find((item) => item.id === selectedMedia?.[1]);
+    if (!media) {
+      return { selectedMedia, canCutMedia: false };
+    }
 
-      let canCut = media.startTime < state.playhead && state.playhead < media.endTime;
-      return { selectedMedia, canCutMedia: canCut };
-    }),
+    let canCut = media.startTime < state.playhead && state.playhead < media.endTime;
+
+    let canMoveUp = false;
+    let canMoveDown = true;
+    const startTime = media.startTime;
+    const endTime = media.endTime;
+
+    const trackUp = state.tracks.find((track) => track.id === selectedMedia[0] - 1);
+    if (trackUp !== undefined) {
+      canMoveUp = media.type === trackUp.mediaType;
+      trackUp.items.forEach(element => {
+        if ((element.startTime < endTime && element.startTime > startTime)
+            || (element.endTime < endTime && element.endTime > startTime)
+            || (element.startTime < startTime && element.endTime > endTime)) {
+          canMoveUp = false;
+        }
+      });
+    }
+    const trackDown = state.tracks.find((track) => track.id === selectedMedia[0] + 1);
+    if (trackDown !== undefined) {
+      canMoveDown = media.type === trackDown.mediaType;
+      trackDown.items.forEach(element => {
+        if ((element.startTime < endTime && element.startTime > startTime)
+            || (element.endTime < endTime && element.endTime > startTime)
+            || (element.startTime < startTime && element.endTime > endTime)) {
+          canMoveDown = false;
+        }
+      });
+    }
+
+    return { selectedMedia, canCutMedia: canCut, canChangeTrackMediaDown: canMoveDown, canChangeTrackMediaUp: canMoveUp };
+  }),
 
   cutMedia: () => set((state) => {
     if (!state.selectedMedia) {
@@ -425,6 +459,29 @@ const useTimelineStore = create<TimelineStore>((set) => ({
     });
     track.items = track.items.filter((item) => item.id != mediaId);
     track.items.push(newMedia1, newMedia2);
+    return { tracks: [...state.tracks] };
+  }),
+
+  changeTrackMedia: (up: boolean) => set((state) => {
+    if (!state.selectedMedia) {
+      return state;
+    }
+    const [trackId, mediaId] = state.selectedMedia;
+    const track = state.tracks.find((track) => track.id === trackId);
+    if (!track) {
+      return state;
+    }
+    const mediaIndex = track.items.findIndex((item) => item.id === mediaId);
+    if (mediaIndex === -1) {
+      return state;
+    }
+    const media = track.items.find((item) => item.id === mediaId)!;
+    const newTrackId = up ? trackId - 1 : trackId + 1;
+    const newTrack = state.tracks.find((track) => track.id === newTrackId);
+
+    track.items = track.items.filter((item) => item.id != mediaId);
+    newTrack?.items.push(media);
+    state.setSelectedMedia([newTrackId, mediaId]);
     return { tracks: [...state.tracks] };
   })
 }));

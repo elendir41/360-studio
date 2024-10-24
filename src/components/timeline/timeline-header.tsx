@@ -17,6 +17,8 @@ const TimelineHeader = () => {
   const duration = useTimelineStore((state) => state.duration);
   const isPlaying = useTimelineStore((state) => state.isPlaying);
   const canCutMedia = useTimelineStore((state) => state.canCutMedia);
+  const canChangeTrackMediaDown = useTimelineStore((state) => state.canChangeTrackMediaDown);
+  const canChangeTrackMediaUp = useTimelineStore((state) => state.canChangeTrackMediaUp);
   const play = useTimelineStore((state) => state.play);
   const pause = useTimelineStore((state) => state.pause);
   const setPlayhead = useTimelineStore((state) => state.setPlayhead);
@@ -54,6 +56,7 @@ const TimelineHeader = () => {
     }
   }
   const cutMedia = useTimelineStore((state) => state.cutMedia);
+  const changeTrackMedia = useTimelineStore((state) => state.changeTrackMedia);
 
   return (
     <header className='flex gap-2 items-center p-2'>
@@ -63,8 +66,8 @@ const TimelineHeader = () => {
         {isMenuOpen && (
           <div style={menuStyles}>
             <Button onClick={cutMedia} disabled={!canCutMedia} style={{ width: '100%', justifyContent:'center' }}>Couper</Button>
-            <Button style={{ width: '100%', justifyContent:'center' }}>Vers le bas</Button>
-            <Button style={{ width: '100%', justifyContent:'center' }}>Vers le haut</Button>
+            <Button onClick={() => changeTrackMedia(true)} disabled={!canChangeTrackMediaUp} style={{ width: '100%', justifyContent:'center' }}>Vers le haut</Button>
+            <Button onClick={() => changeTrackMedia(false)} disabled={!canChangeTrackMediaDown} style={{ width: '100%', justifyContent:'center' }}>Vers le bas</Button>
           </div>
         )}
       </div>
