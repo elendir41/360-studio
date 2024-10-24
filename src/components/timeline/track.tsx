@@ -8,12 +8,14 @@ import { restrictToHorizontalAxis, restrictToParentElement } from '@dnd-kit/modi
 import { useId, useState } from 'react';
 import { extractMediaId, findTargetId, handleCollision } from '~/utils/drag-and-drop';
 import PreviewMediaItem from '~/types/media-preview-item';
+import { MediaType } from '~/types/media-timeline';
 
 type TrackProps = {
   trackId: number;
+  mediaType: MediaType;
 }
 
-const Track = ({ trackId }: TrackProps) => {
+const Track = ({ trackId, mediaType }: TrackProps) => {
   const track = useTimelineStore((state) => state.tracks.find((track) => track.id === trackId));
 
 
@@ -47,6 +49,7 @@ const Track = ({ trackId }: TrackProps) => {
     if (targetId) {
       moveMediaOrder(trackId, mediaId, parseInt(targetId, 10));
     }
+    setSelectedMedia([trackId, mediaId]);
   }
 
   function handleDragMove(event: DragMoveEvent) {

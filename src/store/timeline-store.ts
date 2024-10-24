@@ -13,6 +13,8 @@ type TimelineStore = {
   zoom: number;
   selectedMedia: [number, number] | null;
   canCutMedia: boolean;
+  canChangeTrackMediaUp: boolean;
+  canChangeTrackMediaDown: boolean;
 
   setZoom: (zoom: number) => void;
   incrementZoom: (increment: number) => void;
@@ -29,6 +31,7 @@ type TimelineStore = {
 
   setSelectedMedia: (mediaId: [number, number]) => void;
   cutMedia: () => void;
+  changeTrackMedia: (up: boolean) => void;
 
   play: () => void;
   pause: () => void;
@@ -42,32 +45,37 @@ const useTimelineStore = create<TimelineStore>((set) => ({
     id: 1, items: [
       new MediaTimeline({
         id: 1,
-        type: MediaType.IMAGE,
+        type: MediaType.MOTION_DESIGN,
         source: 'https://via.placeholder.com/150',
-        name: 'Image 1',
+        name: 'Motion Design 1',
         duration: 10,
         originTime: 0,
         startOffset: 0,
         endOffset: 0,
       }),
-      // new MediaTimeline({
-      //   id: 2,
-      //   type: MediaType.VIDEO,
-      //   source: 'https://www.w3schools.com/html/mov_bbb.mp4',
-      //   name: 'Video 1',
-      //   duration: 10,
-      //   startTime: 10,
-      //   startOffset: 0,
-      //   endOffset: 0,
-      // }),
-    ]
+    ],
+    mediaType: MediaType.MOTION_DESIGN,
   }, {
     id: 2, items: [
       new MediaTimeline({
+        id: 2,
+        type: MediaType.MOTION_DESIGN,
+        source: 'https://via.placeholder.com/150',
+        name: 'Motion Design 2',
+        duration: 8,
+        originTime: 1,
+        startOffset: 0,
+        endOffset: 0,
+      }),
+    ],
+    mediaType: MediaType.MOTION_DESIGN,
+  }, {
+    id: 3, items: [
+      new MediaTimeline({
         id: 3,
-        type: MediaType.AUDIO,
+        type: MediaType.IMAGE,
         source: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
-        name: 'Audio 1',
+        name: 'Img 1',
         duration: 10,
         originTime: -5,
         startOffset: 8,
@@ -75,9 +83,9 @@ const useTimelineStore = create<TimelineStore>((set) => ({
       }),
       new MediaTimeline({
         id: 4,
-        type: MediaType.MOTION_DESIGN,
+        type: MediaType.IMAGE,
         source: 'https://www.w3schools.com/html/mov_bbb.mp4',
-        name: 'Motion Design 1',
+        name: 'Img 2',
         duration: 10,
         originTime: -2,
         startOffset: 8,
@@ -87,17 +95,90 @@ const useTimelineStore = create<TimelineStore>((set) => ({
         id: 5,
         type: MediaType.IMAGE,
         source: 'https://via.placeholder.com/150',
-        name: 'Image 2',
+        name: 'Image 3',
         duration: 4,
         originTime: 9,
         startOffset: 0,
         endOffset: 0,
       }),
-    ]
+    ],
+    mediaType: MediaType.IMAGE,
+  }, {
+    id: 4, items: [
+      new MediaTimeline({
+        id: 6,
+        type: MediaType.IMAGE,
+        source: 'https://via.placeholder.com/150',
+        name: 'Image 4',
+        duration: 8,
+        originTime: 1,
+        startOffset: 0,
+        endOffset: 0,
+      }),
+    ],
+    mediaType: MediaType.IMAGE,
+  }, {
+    id: 5, items: [
+      new MediaTimeline({
+        id: 7,
+        type: MediaType.VIDEO,
+        source: 'https://via.placeholder.com/150',
+        name: 'Video 1',
+        duration: 8,
+        originTime: 1,
+        startOffset: 0,
+        endOffset: 0,
+      }),
+    ],
+    mediaType: MediaType.VIDEO,
+  }, {
+    id: 6, items: [
+      new MediaTimeline({
+        id: 8,
+        type: MediaType.VIDEO,
+        source: 'https://via.placeholder.com/150',
+        name: 'Video 2',
+        duration: 8,
+        originTime: 1,
+        startOffset: 0,
+        endOffset: 0,
+      }),
+    ],
+    mediaType: MediaType.VIDEO,
+  }, {
+    id: 7, items: [
+      new MediaTimeline({
+        id: 9,
+        type: MediaType.AUDIO,
+        source: 'https://via.placeholder.com/150',
+        name: 'Audio 1',
+        duration: 8,
+        originTime: 1,
+        startOffset: 0,
+        endOffset: 0,
+      }),
+    ],
+    mediaType: MediaType.AUDIO,
+  }, {
+    id: 8, items: [
+      new MediaTimeline({
+        id: 10,
+        type: MediaType.AUDIO,
+        source: 'https://via.placeholder.com/150',
+        name: 'Audio 2',
+        duration: 8,
+        originTime: 1,
+        startOffset: 0,
+        endOffset: 0,
+      }),
+    ],
+    mediaType: MediaType.AUDIO,
   }],
   isPlaying: false,
   selectedMedia: null,
   canCutMedia: false,
+  canChangeTrackMediaUp: false,
+  canChangeTrackMediaDown: false,
 
   setPlayhead: (playhead) => set((state) => {
     const selectedMedia = state.selectedMedia;
@@ -302,16 +383,45 @@ const useTimelineStore = create<TimelineStore>((set) => ({
     return { tracks: [...state.tracks] };
   }),
 
-  setSelectedMedia: (selectedMedia) => set((state) =>
-    {
-      const media = state.tracks.find((track) => track.id === selectedMedia?.[0])?.items.find((item) => item.id === selectedMedia?.[1]);
-      if (!media) {
-        return { selectedMedia, canCutMedia: false };
-      }
+  setSelectedMedia: (selectedMedia) => set((state) => {
+    console.log(selectedMedia[0]);
+    const media = state.tracks.find((track) => track.id === selectedMedia?.[0])?.items.find((item) => item.id === selectedMedia?.[1]);
+    if (!media) {
+      return { selectedMedia, canCutMedia: false };
+    }
 
-      let canCut = media.startTime < state.playhead && state.playhead < media.endTime;
-      return { selectedMedia, canCutMedia: canCut };
-    }),
+    let canCut = media.startTime < state.playhead && state.playhead < media.endTime;
+
+    let canMoveUp = false;
+    let canMoveDown = true;
+    const startTime = media.startTime;
+    const endTime = media.endTime;
+
+    const trackUp = state.tracks.find((track) => track.id === selectedMedia[0] - 1);
+    if (trackUp !== undefined) {
+      canMoveUp = media.type === trackUp.mediaType;
+      trackUp.items.forEach(element => {
+        if ((element.startTime < endTime && element.startTime > startTime)
+            || (element.endTime < endTime && element.endTime > startTime)
+            || (element.startTime < startTime && element.endTime > endTime)) {
+          canMoveUp = false;
+        }
+      });
+    }
+    const trackDown = state.tracks.find((track) => track.id === selectedMedia[0] + 1);
+    if (trackDown !== undefined) {
+      canMoveDown = media.type === trackDown.mediaType;
+      trackDown.items.forEach(element => {
+        if ((element.startTime < endTime && element.startTime > startTime)
+            || (element.endTime < endTime && element.endTime > startTime)
+            || (element.startTime < startTime && element.endTime > endTime)) {
+          canMoveDown = false;
+        }
+      });
+    }
+
+    return { selectedMedia, canCutMedia: canCut, canChangeTrackMediaDown: canMoveDown, canChangeTrackMediaUp: canMoveUp };
+  }),
 
   cutMedia: () => set((state) => {
     if (!state.selectedMedia) {
@@ -349,6 +459,29 @@ const useTimelineStore = create<TimelineStore>((set) => ({
     });
     track.items = track.items.filter((item) => item.id != mediaId);
     track.items.push(newMedia1, newMedia2);
+    return { tracks: [...state.tracks] };
+  }),
+
+  changeTrackMedia: (up: boolean) => set((state) => {
+    if (!state.selectedMedia) {
+      return state;
+    }
+    const [trackId, mediaId] = state.selectedMedia;
+    const track = state.tracks.find((track) => track.id === trackId);
+    if (!track) {
+      return state;
+    }
+    const mediaIndex = track.items.findIndex((item) => item.id === mediaId);
+    if (mediaIndex === -1) {
+      return state;
+    }
+    const media = track.items.find((item) => item.id === mediaId)!;
+    const newTrackId = up ? trackId - 1 : trackId + 1;
+    const newTrack = state.tracks.find((track) => track.id === newTrackId);
+
+    track.items = track.items.filter((item) => item.id != mediaId);
+    newTrack?.items.push(media);
+    state.setSelectedMedia([newTrackId, mediaId]);
     return { tracks: [...state.tracks] };
   })
 }));
