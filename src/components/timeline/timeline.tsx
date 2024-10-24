@@ -62,7 +62,7 @@ const Timeline = () => {
             </div>
           ))}
         </aside>
-        <section ref={tracksRef} className="timeline-scrollbar pb-2 pr-2">
+        <section ref={tracksRef} className="overflow-x-scroll timeline-scrollbar pb-2 pr-2 h-fit overflow-y-hidden">
           <div onClick={handleClick} ref={trackContainerRef} className="relative m-2 flex flex-col gap-1 h-fit w-fit" style={{width: `${duration * zoom}px`}}>
             <Playhead containerRef={trackContainerRef}/>
             <Cursor containerRef={trackContainerRef}/>
